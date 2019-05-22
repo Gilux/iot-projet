@@ -8,6 +8,20 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+app.io = require('socket.io')()
+
+app.io.on('connection', function (socket) {
+  console.log('connected:', socket.client.id);
+  socket.on('J5_TO_SERVER', (data, ack) => {
+    app.io.emit("SERVER_TO_FRONT", data)
+    //ack('ack')
+  })
+  // setInterval(function () {
+  //   app.io.emit('SERVER_TO_J5', Math.random());
+  //   console.log('message sent to the clients');
+  // }, 3000);
+});
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

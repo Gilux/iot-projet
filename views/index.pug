@@ -1,5 +1,9 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  #app
+    h1 {{title}}
+    a(@click.prevent="onBtnClick", href="#") Clear
+    ul
+      li(v-for="log in arduino_logs") {{ log }}
+
