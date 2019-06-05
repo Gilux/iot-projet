@@ -5,6 +5,65 @@ html
     link(rel='stylesheet', href='/stylesheets/style.css')
     script(src='https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js')
     script(src='/socket.io/socket.io.js')
+    script(src='/javascripts/vendor/@fnando/sparkline/dist/sparkline.js')
+    script(src='/javascripts/components/led.js')
+    script(src='/javascripts/components/temperature.js')
+    script(src='/javascripts/components/potentiometer.js')
+    script(src='/javascripts/components/luminosity.js')
+    script(src='/javascripts/components/sound.js')
+    script(src='/javascripts/components/screen.js')
     script(src='/javascripts/app.js')
   body
     block content
+    template#tpl-led
+      .card
+        .card-header
+          h2 {{ title }}
+        .card-body.led
+          img(v-if="on", src="/images/led-on.svg" @click.prevent="onLedSwitch")
+          img(v-else, src="/images/led-off.svg" @click.prevent="onLedSwitch")
+    template#tpl-temperature
+      .card
+        .card-header
+          h2 {{ title }}
+        .card-body.flex-column
+          span.number 17.5
+          span.unit °C
+        .card-footer
+          svg.sparkline(width="300",height="30",stroke-width="3")
+    template#tpl-luminosity
+      .card
+        .card-header
+          h2 {{ title }}
+        .card-body.flex-column
+          span.number 1220
+          span.unit Lux
+        .card-footer
+          svg.sparkline(width="300",height="30",stroke-width="3")
+        
+    template#tpl-potentiometer
+      .card
+        .card-header
+          h2 {{ title }}
+        .card-body.flex-column
+          span.number 80.5%
+          //- span.unit
+        .card-footer
+          svg.sparkline(width="300",height="30",stroke-width="3")
+    template#tpl-sound
+      .card
+        .card-header
+          h2 {{ title }}
+        .card-body.flex-column
+          span.number 35
+          span.unit dB
+        .card-footer
+          svg.sparkline(width="300",height="30",stroke-width="3")
+    template#tpl-screen
+      .card.twice
+        .card-header
+          h2 {{ title }}
+        .card-body my screen here
+
+
+

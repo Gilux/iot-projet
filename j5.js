@@ -37,6 +37,6 @@ var five = require("johnny-five");
 var board = new five.Board({ port: "COM6" });
 
 board.on("ready", function () {
-  var led = new five.Led(7);
+  var led = new five.Led(3);
   led.blink(500);
 });
