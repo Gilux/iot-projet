@@ -10,11 +10,21 @@ var usersRouter = require('./routes/users');
 var app = express();
 app.io = require('socket.io')()
 
+app.components = {
+  led: (data) => {
+    app.io.emit("SERVER_TO_J5", data)
+  }
+}
+
 app.io.on('connection', function (socket) {
   console.log('connected:', socket.client.id);
   socket.on('J5_TO_SERVER', (data, ack) => {
     app.io.emit("SERVER_TO_FRONT", data)
     //ack('ack')
+  })
+
+  socket.on('FRONT_TO_SERVER', (data) => {
+    app.components[data.component](data);
   })
   // setInterval(function () {
   //   app.io.emit('SERVER_TO_J5', Math.random());

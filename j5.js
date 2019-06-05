@@ -18,25 +18,55 @@ var socket = io.connect("http://localhost:3000/", {
 var messages = ["Hello !", "I'm an arduino", "Feed me !", "heyyyyyy"]
 socket.on('connect', function () {
   console.log('connected to localhost:3000');
-  setInterval(() => {
-    socket.emit(
-      "J5_TO_SERVER",
-      "Arduino says : " + messages.sort(() => Math.random() - 0.5)[0],
-      ack => {
-        process.exit(0);
-      }
-    );
-  }, 1000)
-  socket.on("SERVER_TO_J5", function(data) {
-    console.log("message from the server:", data);
-    
-  });
+  // setInterval(() => {
+  //   socket.emit(
+  //     "J5_TO_SERVER",
+  //     "Arduino says : " + messages.sort(() => Math.random() - 0.5)[0],
+  //     ack => {
+  //       process.exit(0);
+  //     }
+  //   );
+  // }, 1000)
+  
 });
+
+let board_components = {
+  led: {
+    obj: null,
+    is_on: true
+  }
+}
+
+
+socket.on("SERVER_TO_J5", (data) => {
+  console.log("message from the server:", data)
+
+  if(data.component === "led") {
+    toggleLed(board_components.led)
+    socket.emit("J5_TO_SERVER", { component: "led", data: {
+      is_on: board_components.led.is_on
+    }})
+  }
+
+
+});
+
+
+function toggleLed( led ) {
+  led.is_on = !led.is_on
+  if(led.is_on) {
+    return led.obj.on()
+  }
+  return led.obj.off()
+}
+
 
 var five = require("johnny-five");
 var board = new five.Board({ port: "COM6" });
 
 board.on("ready", function () {
-  var led = new five.Led(3);
-  led.blink(500);
+  board_components.led.obj = new five.Led(3)   
+  
+  console.log("READY !")
 });
+

@@ -8,7 +8,7 @@ block content
       li(v-for="log in arduino_logs") {{ log }}
 
     .widgets
-      led
+      led(ref="led")
       luminosity
       potentiometer
       sound

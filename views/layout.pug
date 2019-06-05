@@ -20,7 +20,7 @@ html
         .card-header
           h2 {{ title }}
         .card-body.led
-          img(v-if="on", src="/images/led-on.svg" @click.prevent="onLedSwitch")
+          img(v-if="is_on", src="/images/led-on.svg" @click.prevent="onLedSwitch")
           img(v-else, src="/images/led-off.svg" @click.prevent="onLedSwitch")
     template#tpl-temperature
       .card
