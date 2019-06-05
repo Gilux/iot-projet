@@ -27,7 +27,7 @@ html
         .card-header
           h2 {{ title }}
         .card-body.flex-column
-          span.number 17.5
+          span.number {{ value }}
           span.unit °C
         .card-footer
           svg.sparkline(width="300",height="30",stroke-width="3")
@@ -36,7 +36,7 @@ html
         .card-header
           h2 {{ title }}
         .card-body.flex-column
-          span.number 1220
+          span.number {{value}}
           span.unit Lux
         .card-footer
           svg.sparkline(width="300",height="30",stroke-width="3")
@@ -46,7 +46,7 @@ html
         .card-header
           h2 {{ title }}
         .card-body.flex-column
-          span.number 80.5%
+          span.number {{value}} %
           //- span.unit
         .card-footer
           svg.sparkline(width="300",height="30",stroke-width="3")
