@@ -4,7 +4,8 @@ Vue.component("temperature", {
     return {
       title: "Temperature",
       value: 0,
-      history: []
+      history: [],
+      interval: null
     };
   },
   mounted() {
@@ -13,10 +14,15 @@ Vue.component("temperature", {
     $svg.setAttribute("width", $footer.clientWidth);
     sparkline.sparkline($svg, [1, 2, 6, 4], {});
     this.$on("SERVER_RESPONSE", data => this.onServerResponse(data));
+
+    // this.interval = window.setInterval(() => {
+    //   this.$parent.$emit("REQUEST", {component: "temperature"})
+    // }, 1000)
+    
   },
   methods: {
     onServerResponse(data) {
-      this.value = data.data.value;
+      this.value = Math.round(data.data.value*100)/100;
       this.history.push(data.data.value);
       this.generateSparkline();
     },

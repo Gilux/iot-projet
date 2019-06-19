@@ -9,7 +9,7 @@ html {
 
 body {
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 14px "Lato", Helvetica, Arial, sans-serif;
   background-color: #FAFAFA;
 }
 
@@ -21,7 +21,7 @@ a {
   width: 100%;
   display: grid;
 
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, 250px);
   grid-column-gap: 15px;
   grid-row-gap: 15px;

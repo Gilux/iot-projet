@@ -3,15 +3,14 @@ extends layout
 block content
   #app
     h1 {{title}}
-    a(@click.prevent="onBtnClick", href="#") Clear
-    ul
-      li(v-for="log in arduino_logs") {{ log }}
+    br
+    br
 
     .widgets
       led(ref="led")
       luminosity(ref="luminosity")
       potentiometer(ref="potentiometer")
-      sound
+      //- sound
       temperature(ref="temperature")
       screen
 

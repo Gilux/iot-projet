@@ -17,7 +17,7 @@ Vue.component("luminosity", {
   },
   methods: {
     onServerResponse(data) {
-      this.value = data.data.value;
+      this.value = Math.round(data.data.value*1333.33); // 0-1000 Lux
       this.history.push(data.data.value);
       this.generateSparkline();
     },

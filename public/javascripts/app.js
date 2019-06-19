@@ -15,7 +15,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
       this.$on("LED_SWITCH", () => {
         this.socket.emit("FRONT_TO_SERVER", {component: "led", data: "switch"});
-        console.log("socket emitted")
+      })
+
+      this.$on("SCREEN_CHANGE", (text) => {
+        this.socket.emit("FRONT_TO_SERVER", {component: "screen", data: text});
+      })
+
+      this.$on("REQUEST", (data) => {
+        console.log(data)
+        this.socket.emit("FRONT_TO_SERVER", {component: data.component});
       })
     },
     methods: {

@@ -10,7 +10,11 @@ Vue.component("potentiometer", {
   mounted() {
     this.$on("SERVER_RESPONSE", data => this.onServerResponse(data));
   },
-
+  computed: {
+    scaledValue() {
+      return Math.round((this.value/255)*10000)/100
+    }
+  },
   methods: {
     onServerResponse(data) {
       this.value = data.data.value;

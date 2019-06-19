@@ -46,7 +46,7 @@ html
         .card-header
           h2 {{ title }}
         .card-body.flex-column
-          span.number {{value}} %
+          span.number {{scaledValue}} %
           //- span.unit
         .card-footer
           svg.sparkline(width="300",height="30",stroke-width="3")
@@ -63,7 +63,8 @@ html
       .card.twice
         .card-header
           h2 {{ title }}
-        .card-body my screen here
+        .card-body
+          textarea(v-model="text",@input="onChange")
 
 
 

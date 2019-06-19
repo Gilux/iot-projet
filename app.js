@@ -13,6 +13,12 @@ app.io = require('socket.io')()
 app.components = {
   led: (data) => {
     app.io.emit("SERVER_TO_J5", data)
+  },
+  screen: (data) => {
+    app.io.emit("SERVER_TO_J5", data)
+  },
+  temperature: (data) => {
+    app.io.emit("SERVER_TO_J5", data)
   }
 }
 
