@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
       })
 
       this.$on("REQUEST", (data) => {
-        console.log(data)
         this.socket.emit("FRONT_TO_SERVER", {component: data.component});
       })
     },

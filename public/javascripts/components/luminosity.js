@@ -14,6 +14,10 @@ Vue.component("luminosity", {
     sparkline.sparkline($svg, [1, 2, 6, 4], {});
 
     this.$on("SERVER_RESPONSE", data => this.onServerResponse(data));
+
+    this.interval = window.setInterval(() => {
+      this.$parent.$emit("REQUEST", { component: "luminosity" })
+    }, 1000)
   },
   methods: {
     onServerResponse(data) {

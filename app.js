@@ -11,16 +11,19 @@ var app = express();
 app.io = require('socket.io')()
 
 app.components = {
-  led: (data) => {
-    app.io.emit("SERVER_TO_J5", data)
+  led: data => {
+    app.io.emit("SERVER_TO_J5", data);
   },
-  screen: (data) => {
-    app.io.emit("SERVER_TO_J5", data)
+  screen: data => {
+    app.io.emit("SERVER_TO_J5", data);
   },
-  temperature: (data) => {
-    app.io.emit("SERVER_TO_J5", data)
+  temperature: data => {
+    app.io.emit("SERVER_TO_J5", data);
+  },
+  luminosity: data => {
+    app.io.emit("SERVER_TO_J5", data);
   }
-}
+};
 
 app.io.on('connection', function (socket) {
   console.log('connected:', socket.client.id);

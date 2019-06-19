@@ -15,9 +15,9 @@ Vue.component("temperature", {
     sparkline.sparkline($svg, [1, 2, 6, 4], {});
     this.$on("SERVER_RESPONSE", data => this.onServerResponse(data));
 
-    // this.interval = window.setInterval(() => {
-    //   this.$parent.$emit("REQUEST", {component: "temperature"})
-    // }, 1000)
+    this.interval = window.setInterval(() => {
+      this.$parent.$emit("REQUEST", {component: "temperature"})
+    }, 1000)
     
   },
   methods: {

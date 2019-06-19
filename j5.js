@@ -11,23 +11,13 @@
  */
 
 var io = require('socket.io-client');
+var colors = require("css-color-names");
 var socket = io.connect("http://localhost:3000/", {
   reconnection: true
 });
 
-// var messages = ["Hello !", "I'm an arduino", "Feed me !", "heyyyyyy"]
 socket.on('connect', function () {
-  console.log('connected to localhost:3000');
-  // setInterval(() => {
-  //   socket.emit(
-  //     "J5_TO_SERVER",
-  //     "Arduino says : " + messages.sort(() => Math.random() - 0.5)[0],
-  //     ack => {
-  //       process.exit(0);
-  //     }
-  //   );
-  // }, 1000)
-  
+  console.log('Socket Connected!');
 });
 
 let board_components = {
@@ -53,10 +43,9 @@ let board_components = {
   }
 };
 
-
+// When the Express server relays a socket from front-end
 socket.on("SERVER_TO_J5", (data) => {
-  console.log("message from the server:", data)
-
+  // Toggle LED
   if(data.component === "led") {
     toggleLed(board_components.led)
     socket.emit("J5_TO_SERVER", { component: "led", data: {
@@ -64,49 +53,61 @@ socket.on("SERVER_TO_J5", (data) => {
     }})
   }
 
+  // Displays the selected text on the LCD screen
   if(data.component === "screen") {
+    // Respect the line-breaks
     let str = data.data.split("\n")
     board_components.screen.obj.cursor(0, 0).clear().print(str[0])
-
     if(str.length >= 2) {
       board_components.screen.obj.cursor(1, 0).print(str[1])
     }
   }
-});
 
-/* Led */
-function toggleLed( led ) {
-  led.is_on = !led.is_on
-  if(led.is_on) {
-    return led.obj.on()
+  // Temperature request update
+  if (data.component === "temperature") {
+    socket.emit("J5_TO_SERVER", {
+      component: "temperature",
+      data: {
+        value: getTemperature(board_components.temperature.obj)
+      }
+    });
   }
-  return led.obj.off()
-}
 
-/* Potentiometer */
-
+  // Luminosity request update
+  if (data.component === "luminosity") {
+    socket.emit("J5_TO_SERVER", {
+      component: "luminosity",
+      data: {
+        value: getLuminosity(board_components.luminosity.obj)
+      }
+    });
+  } 
+});
 
 
 var five = require("johnny-five");
-var colors = Object.keys(require("css-color-names"));
 
-console.log(colors);
+try {
+  var board = new five.Board({ port: "COM6" });
+}
+catch(err) {
+  console.log(err)
+}
 
-var board = new five.Board({ port: "COM6" });
+board.on("ready", function () {
+  console.log("\x1b[46m\x1b[37m", "  BOARD CONNECTING...  ", "\x1b[0m");
+})
 
 board.on("ready", function () {
   board_components.led.obj = new five.Led(4)
 
   board_components.luminosity.obj = new five.Light("A0");
-  board_components.luminosity.obj.on("change", function() {
-    socket.emit("J5_TO_SERVER", {
-      component: "luminosity",
-      data: {
-        value: this.level
-      }
-    });
+
+  board_components.potentiometer.obj = new five.Sensor({
+    pin: "A2",
+    threshold: 3
   });
-  board_components.potentiometer.obj = new five.Sensor("A2");
+  
   board_components.potentiometer.obj.scale(0, 255).on("change", function() {
     socket.emit("J5_TO_SERVER", {
       component: "potentiometer", data: {
@@ -114,27 +115,89 @@ board.on("ready", function () {
       }
     })
   });
+
   board_components.temperature.obj = new five.Sensor("A1");
-  board_components.temperature.obj.on("change", function() {
-    var R = (1023.0/this.raw-1.0);
-    R *= 100000
-    var temperature = 1.0/(Math.log(R/100000.0)/4275+1/298.15)-273.15
-    socket.emit("J5_TO_SERVER", {
-      component: "temperature",
-      data: {
-        value: temperature
-      }
-    });
-  });
+
 
   board_components.screen.obj = new five.LCD({
     controller: "JHD1313M1"
   });
+
+
+  // board_components.screen.obj.useChar("runningB");
+  // board_components.screen.obj.clear().print("runningB");
+  initLCDChars(board_components.screen.obj)
+
   board_components.screen.obj.bgColor("moccasin");
   
-  console.log("READY !")
+  console.log("\x1b[42m\x1b[37m", "  BOARD READY !  ","\x1b[0m")
 });
 
-board.on("exit", () => {
-  console.log("exit")
-})
+/*
+*
+*
+* COMPONENT-SPECIFIC ACTIONS
+*
+*/
+
+/**
+ * Toggles a LED.
+ * @param five.Led led The LED object reference 
+ */
+function toggleLed(led) {
+  led.is_on = !led.is_on
+  if (led.is_on) {
+    return led.obj.on()
+  }
+  return led.obj.off()
+}
+
+
+/**
+ * Gets a temperature
+ * @param five.Sensor sensor The Sensor instance reference
+ */
+function getTemperature(sensor) {
+  if(!sensor) return null
+  var R = (1023.0 / sensor.raw - 1.0);
+  R *= 100000
+  return 1.0 / (Math.log(R / 100000.0) / 4275 + 1 / 298.15) - 273.15
+}
+
+/**
+ * Gets the luminosity
+ * @param five.Sensor sensor The Sensor instance reference
+ */
+function getLuminosity(sensor) {
+  if (!sensor) return null
+  return sensor.level
+}
+
+/**
+ * Init LCD special chars
+ * @param five.LCD lcd
+ */
+async function initLCDChars( lcd ) {
+  lcd.useChar("duck")
+
+
+  moveDuck(lcd)
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function moveDuck(lcd) {
+  // Sleep in loop
+  var direction = 1
+  for (let i = 0; i < 16; i += direction) {
+    await sleep(1000);
+    lcd.clear().cursor(0, i).print(':duck:')
+    var o = Math.round, r = Math.random, s = 255;
+    lcd.bgColor([o(r() * s), o(r() * s), o(r() * s)])
+    if(i === 15 || (i === 0 && direction === -1)) {
+      direction *= -1
+    }
+  }
+}
